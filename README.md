@@ -1,10 +1,10 @@
 # updateCache
 
-Cache shortcut updates from RoutineHub and push them to a GitHub repository.
+Cache shortcut updates from RoutineHub API and push them to a GitHub repository.
 
 ## Setup
 
-1. Open the Apps Script project and choose **Run > Test deployments > doGet** to launch the setup page, or deploy it as a web app.
+1. Open the [Apps Script project](https://script.google.com/home/projects/1FbQLKqGQWl2Re3TFxMNr0Q4-CtVuzmTK6uppKJuvdnbGyxZ03dBUjmLo) click make a copy then in your copy and choose **Run > New deployments > Web App** to launch the setup page.
 2. Use the setup page to provide:
    - GitHub owner or organization name
    - Repository name
