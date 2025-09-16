@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Shortcut Sync Setup</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --primary: #1a73e8;
+        --primary-dark: #0b57d0;
+        --surface: #ffffff;
+        --muted: #5f6368;
+        --danger: #a50e0e;
+        --surface-muted: #f1f3f4;
+        --success: #0b5a2a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 16px;
+        font-family: 'Google Sans', Roboto, 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #e8f0fe 0%, #f8fbff 45%, #f3f7ff 100%);
+        color: #202124;
+      }
+
+      .shell {
+        width: 100%;
+        max-width: 720px;
+        background: var(--surface);
+        border-radius: 18px;
+        box-shadow: 0 20px 45px rgba(26, 115, 232, 0.16);
+        padding: 36px 42px 48px;
+      }
+
+      header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      header .icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 16px;
+        background: rgba(26, 115, 232, 0.12);
+        display: grid;
+        place-items: center;
+        font-size: 28px;
+        color: var(--primary);
+      }
+
+      header h1 {
+        margin: 0;
+        font-size: 26px;
+        font-weight: 600;
+      }
+
+      header p {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      form {
+        margin-top: 28px;
+        display: grid;
+        gap: 28px;
+      }
+
+      .section h2 {
+        margin: 0 0 12px;
+        font-size: 16px;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--muted);
+      }
+
+      .field-grid {
+        display: grid;
+        gap: 16px;
+      }
+
+      @media (min-width: 640px) {
+        .field-grid.two-column {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 18px 24px;
+        }
+      }
+
+      label {
+        display: grid;
+        gap: 8px;
+      }
+
+      label span.label {
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        font-weight: 600;
+      }
+
+      input[type="text"],
+      input[type="password"] {
+        padding: 12px 14px;
+        font-size: 15px;
+        border-radius: 10px;
+        border: 1px solid rgba(32, 33, 36, 0.16);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      input[type="text"]:focus,
+      input[type="password"]:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.12);
+      }
+
+      .hint {
+        margin: 4px 0 0;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .toggle {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        background: var(--surface-muted);
+        border-radius: 12px;
+      }
+
+      .toggle input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+      }
+
+      .toggle span.title {
+        font-weight: 600;
+      }
+
+      .toggle span.toggle-hint {
+        display: block;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .manual-manager {
+        margin-top: 16px;
+        padding: 16px;
+        border-radius: 12px;
+        background: rgba(26, 115, 232, 0.08);
+        display: grid;
+        gap: 12px;
+      }
+
+      .manual-manager.is-hidden {
+        display: none;
+      }
+
+      .manual-add {
+        display: flex;
+        gap: 10px;
+      }
+
+      .manual-add input {
+        flex: 1;
+      }
+
+      .manual-add button {
+        white-space: nowrap;
+      }
+
+      .manual-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 8px;
+      }
+
+      .manual-list li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #fff;
+        border-radius: 10px;
+        padding: 10px 12px;
+        border: 1px solid rgba(26, 115, 232, 0.16);
+      }
+
+      .manual-list li .shortcut-id {
+        font-family: 'Roboto Mono', monospace;
+        font-size: 13px;
+      }
+
+      .manual-list li button {
+        font-size: 12px;
+        padding: 6px 10px;
+      }
+
+      .manual-list li.empty {
+        justify-content: center;
+        color: var(--muted);
+        border-style: dashed;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 12px;
+      }
+
+      button {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: none;
+        border-radius: 999px;
+        padding: 12px 22px;
+        font-size: 15px;
+        font-weight: 600;
+        color: #fff;
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+      }
+
+      button:hover:not(:disabled) {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 25px rgba(26, 115, 232, 0.28);
+      }
+
+      button:disabled {
+        opacity: 0.7;
+        cursor: default;
+        box-shadow: none;
+      }
+
+      button.secondary {
+        background: rgba(26, 115, 232, 0.12);
+        color: var(--primary-dark);
+      }
+
+      button.secondary:hover:not(:disabled) {
+        box-shadow: none;
+      }
+
+      button.danger {
+        background: rgba(165, 14, 14, 0.14);
+        color: var(--danger);
+      }
+
+      button .loading {
+        display: none;
+      }
+
+      button.is-loading .label {
+        display: none;
+      }
+
+      button.is-loading .loading {
+        display: inline;
+      }
+
+      .status {
+        display: none;
+        margin-top: 28px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-size: 14px;
+        line-height: 1.4;
+      }
+
+      .status.show {
+        display: block;
+      }
+
+      .status.info {
+        background: rgba(26, 115, 232, 0.12);
+        color: var(--primary-dark);
+      }
+
+      .status.success {
+        background: #e6f4ea;
+        color: var(--success);
+      }
+
+      .status.error {
+        background: #fce8e6;
+        color: var(--danger);
+      }
+
+      .automation,
+      .history {
+        margin-top: 32px;
+      }
+
+      .automation p {
+        margin: 0;
+        font-size: 14px;
+        color: #202124;
+        background: var(--surface-muted);
+        padding: 12px 16px;
+        border-radius: 12px;
+      }
+
+      .history ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 12px;
+      }
+
+      .run-entry {
+        border-radius: 12px;
+        padding: 14px 16px;
+        background: var(--surface-muted);
+        display: grid;
+        gap: 8px;
+      }
+
+      .run-entry.success {
+        background: #e6f4ea;
+        color: var(--success);
+      }
+
+      .run-entry.error {
+        background: #fce8e6;
+        color: var(--danger);
+      }
+
+      .run-entry .meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 13px;
+        color: inherit;
+      }
+
+      .run-entry .meta .pill {
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.32);
+      }
+
+      .run-entry .detail {
+        margin: 0;
+        font-size: 13px;
+        color: inherit;
+      }
+
+      .run-entry .detail strong {
+        font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="shell">
+      <header>
+        <div class="icon">⚙️</div>
+        <div>
+          <h1>Shortcut Sync Setup</h1>
+          <p>Connect GitHub and RoutineHub, configure manual shortcuts, and monitor hourly syncs.</p>
+        </div>
+      </header>
+      <form id="setup-form">
+        <section class="section">
+          <h2>GitHub repository</h2>
+          <div class="field-grid two-column">
+            <label>
+              <span class="label">GitHub owner</span>
+              <input type="text" name="owner" placeholder="octocat" required />
+            </label>
+            <label>
+              <span class="label">Repository</span>
+              <input type="text" name="repo" placeholder="shortcuts" required />
+            </label>
+            <label>
+              <span class="label">Repository folder</span>
+              <input type="text" name="folder" placeholder="scVersions" required />
+              <p class="hint">The folder will be created if it doesn't exist yet.</p>
+            </label>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Tokens</h2>
+          <div class="field-grid two-column">
+            <label>
+              <span class="label">GitHub token</span>
+              <input
+                type="password"
+                name="token"
+                placeholder="ghp_..."
+                autocomplete="off"
+                required
+              />
+              <p class="hint">Stored securely in your Apps Script user properties.</p>
+            </label>
+            <label>
+              <span class="label">RoutineHub token</span>
+              <input
+                type="password"
+                name="routineHubToken"
+                placeholder="rh_..."
+                autocomplete="off"
+              />
+              <p class="hint">Used for the RoutineHub API call that discovers new shortcuts.</p>
+            </label>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2>Shortcut manager</h2>
+          <label class="toggle">
+            <input type="checkbox" id="manual-toggle" />
+            <div>
+              <span class="title">Manage shortcuts manually</span>
+              <span class="toggle-hint">When disabled the script pulls the latest published shortcuts from RoutineHub.</span>
+            </div>
+          </label>
+          <div class="manual-manager is-hidden" id="manual-manager">
+            <div class="manual-add">
+              <input type="text" id="manual-input" placeholder="Shortcut ID" />
+              <button type="button" id="manual-add" class="secondary">
+                <span class="label">Add</span>
+                <span class="loading">Adding…</span>
+              </button>
+            </div>
+            <ul class="manual-list" id="manual-list"></ul>
+            <p class="hint">Enter RoutineHub shortcut IDs. Duplicates are ignored automatically.</p>
+          </div>
+        </section>
+
+        <div class="actions">
+          <button type="submit" id="save-button">
+            <span class="label">Save settings</span>
+            <span class="loading">Saving…</span>
+          </button>
+          <button type="button" id="run-button" class="secondary">
+            <span class="label">Run now</span>
+            <span class="loading">Running…</span>
+          </button>
+          <button type="button" id="reset-button" class="secondary danger">
+            <span class="label">Reset setup</span>
+            <span class="loading">Resetting…</span>
+          </button>
+        </div>
+      </form>
+      <div id="status" class="status info show" role="status" aria-live="polite">
+        Ready to save your GitHub settings.
+      </div>
+      <section class="section automation">
+        <h2>Automation</h2>
+        <p id="automation-status">No hourly trigger yet. Save your settings to start automatic runs.</p>
+      </section>
+      <section class="section history">
+        <h2>Run history</h2>
+        <ul id="run-log"></ul>
+      </section>
+    </main>
+
+    <script>
+      const INITIAL_SETTINGS = <?!= JSON.stringify(initialSettings) ?>;
+    </script>
+    <script>
+      (function() {
+        const form = document.getElementById('setup-form');
+        const statusEl = document.getElementById('status');
+        const saveButton = document.getElementById('save-button');
+        const runButton = document.getElementById('run-button');
+        const resetButton = document.getElementById('reset-button');
+        const automationStatus = document.getElementById('automation-status');
+        const manualToggle = document.getElementById('manual-toggle');
+        const manualManager = document.getElementById('manual-manager');
+        const manualListEl = document.getElementById('manual-list');
+        const manualInput = document.getElementById('manual-input');
+        const manualAddButton = document.getElementById('manual-add');
+        const runLogEl = document.getElementById('run-log');
+
+        let state = normalizeSettings(INITIAL_SETTINGS);
+
+        function normalizeSettings(settings) {
+          const base = {
+            owner: '',
+            repo: '',
+            folder: '',
+            token: '',
+            routineHubToken: '',
+            manualShortcutsEnabled: false,
+            manualShortcuts: [],
+            hasHourlyTrigger: false,
+            runLog: []
+          };
+          const merged = Object.assign(base, settings || {});
+          merged.manualShortcuts = Array.isArray(merged.manualShortcuts)
+            ? merged.manualShortcuts.slice()
+            : [];
+          merged.runLog = Array.isArray(merged.runLog) ? merged.runLog.slice() : [];
+          merged.manualShortcuts = merged.manualShortcuts.filter(function(id) {
+            return typeof id === 'string' && id.trim().length > 0;
+          });
+          return merged;
+        }
+
+        function getField(name) {
+          return form.elements.namedItem(name);
+        }
+
+        function applySettings(settings) {
+          state = normalizeSettings(settings);
+          getField('owner').value = state.owner || '';
+          getField('repo').value = state.repo || '';
+          getField('folder').value = state.folder || '';
+          getField('token').value = state.token || '';
+          getField('routineHubToken').value = state.routineHubToken || '';
+
+          manualToggle.checked = !!state.manualShortcutsEnabled;
+          renderManualList();
+          updateManualVisibility();
+          renderRunLog();
+          updateAutomationStatus();
+        }
+
+        function setStatus(message, kind) {
+          const classes = ['status', kind || 'info'];
+          if (message) {
+            classes.push('show');
+          }
+          statusEl.className = classes.join(' ');
+          statusEl.textContent = message || '';
+        }
+
+        function toggleLoading(button, isLoading) {
+          button.disabled = Boolean(isLoading);
+          button.classList.toggle('is-loading', Boolean(isLoading));
+        }
+
+        function renderManualList() {
+          manualListEl.innerHTML = '';
+          if (!state.manualShortcuts.length) {
+            const empty = document.createElement('li');
+            empty.className = 'empty';
+            empty.textContent = 'No manual shortcuts added yet.';
+            manualListEl.appendChild(empty);
+            return;
+          }
+
+          state.manualShortcuts.forEach(function(id) {
+            const item = document.createElement('li');
+            item.dataset.id = id;
+            const label = document.createElement('span');
+            label.className = 'shortcut-id';
+            label.textContent = id;
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'secondary';
+            removeButton.textContent = 'Remove';
+            item.appendChild(label);
+            item.appendChild(removeButton);
+            manualListEl.appendChild(item);
+          });
+        }
+
+        function updateManualVisibility() {
+          const isEnabled = manualToggle.checked;
+          manualManager.classList.toggle('is-hidden', !isEnabled);
+          manualInput.disabled = !isEnabled;
+          manualAddButton.disabled = !isEnabled;
+          state.manualShortcutsEnabled = isEnabled;
+          updateAutomationStatus();
+        }
+
+        function addManualShortcut() {
+          if (!manualToggle.checked) {
+            return;
+          }
+          const value = manualInput.value.trim();
+          if (!value) {
+            return;
+          }
+          if (state.manualShortcuts.indexOf(value) === -1) {
+            state.manualShortcuts.push(value);
+          }
+          manualInput.value = '';
+          renderManualList();
+        }
+
+        function removeManualShortcut(id) {
+          const index = state.manualShortcuts.indexOf(id);
+          if (index !== -1) {
+            state.manualShortcuts.splice(index, 1);
+            renderManualList();
+          }
+        }
+
+        function updateAutomationStatus() {
+          if (state.hasHourlyTrigger) {
+            const mode = state.manualShortcutsEnabled
+              ? 'the manual shortcut list'
+              : 'the RoutineHub feed';
+            automationStatus.textContent =
+              'An hourly trigger is active and will sync using ' + mode + '.';
+          } else {
+            automationStatus.textContent =
+              'No hourly trigger yet. Save your settings to start automatic runs.';
+          }
+        }
+
+        function renderRunLog() {
+          runLogEl.innerHTML = '';
+          if (!state.runLog.length) {
+            const empty = document.createElement('li');
+            empty.className = 'run-entry';
+            empty.textContent = 'No runs recorded yet.';
+            runLogEl.appendChild(empty);
+            return;
+          }
+
+          state.runLog.forEach(function(entry) {
+            const item = document.createElement('li');
+            item.className = 'run-entry ' + (entry.status || 'info');
+
+            const meta = document.createElement('div');
+            meta.className = 'meta';
+            const pill = document.createElement('span');
+            pill.className = 'pill';
+            pill.textContent = entry.status === 'success' ? 'Success' : 'Error';
+            const time = document.createElement('time');
+            if (entry.timestamp) {
+              const date = new Date(entry.timestamp);
+              time.textContent = isNaN(date.getTime())
+                ? entry.timestamp
+                : date.toLocaleString();
+            } else {
+              time.textContent = '';
+            }
+            meta.appendChild(pill);
+            meta.appendChild(time);
+
+            const detail = document.createElement('p');
+            detail.className = 'detail';
+            if (entry.status === 'success') {
+              const parts = [];
+              const count = typeof entry.count === 'number' ? entry.count : 0;
+              parts.push(count + ' shortcut' + (count === 1 ? '' : 's'));
+              if (entry.durationMs) {
+                const seconds = Math.round(entry.durationMs / 100) / 10;
+                parts.push('in ' + seconds.toFixed(1) + 's');
+              }
+              const mode = entry.manual ? 'manual list' : 'RoutineHub feed';
+              detail.textContent = 'Synced ' + parts.join(' ') + ' using the ' + mode + '.';
+            } else {
+              detail.textContent = entry.message || 'The run ended with an error.';
+            }
+
+            item.appendChild(meta);
+            item.appendChild(detail);
+            runLogEl.appendChild(item);
+          });
+        }
+
+        function collectFormData() {
+          return {
+            owner: getField('owner').value,
+            repo: getField('repo').value,
+            folder: getField('folder').value,
+            token: getField('token').value,
+            routineHubToken: getField('routineHubToken').value,
+            manualShortcutsEnabled: manualToggle.checked,
+            manualShortcuts: state.manualShortcuts.slice()
+          };
+        }
+
+        function getErrorMessage(error) {
+          if (!error) {
+            return 'Unknown error';
+          }
+          if (typeof error === 'string') {
+            return error;
+          }
+          if (error.message) {
+            return error.message;
+          }
+          return String(error);
+        }
+
+        manualToggle.addEventListener('change', updateManualVisibility);
+
+        manualAddButton.addEventListener('click', addManualShortcut);
+        manualInput.addEventListener('keydown', function(event) {
+          if (event.key === 'Enter') {
+            event.preventDefault();
+            addManualShortcut();
+          }
+        });
+
+        manualListEl.addEventListener('click', function(event) {
+          if (event.target.tagName === 'BUTTON') {
+            const li = event.target.closest('li');
+            if (li && li.dataset.id) {
+              removeManualShortcut(li.dataset.id);
+            }
+          }
+        });
+
+        form.addEventListener('submit', function(event) {
+          event.preventDefault();
+          setStatus('Saving settings…', 'info');
+          toggleLoading(saveButton, true);
+          google.script.run
+            .withSuccessHandler(function(settings) {
+              toggleLoading(saveButton, false);
+              setStatus('Settings saved successfully.', 'success');
+              applySettings(settings);
+            })
+            .withFailureHandler(function(error) {
+              toggleLoading(saveButton, false);
+              setStatus('Failed to save settings: ' + getErrorMessage(error), 'error');
+            })
+            .saveSettings(collectFormData());
+        });
+
+        runButton.addEventListener('click', function() {
+          setStatus('Running sync…', 'info');
+          toggleLoading(runButton, true);
+          google.script.run
+            .withSuccessHandler(function(result) {
+              toggleLoading(runButton, false);
+              if (result && result.settings) {
+                applySettings(result.settings);
+              }
+              if (result && result.success) {
+                setStatus('Sync completed successfully.', 'success');
+              } else {
+                setStatus('Sync failed: ' + getErrorMessage(result && result.message), 'error');
+              }
+            })
+            .withFailureHandler(function(error) {
+              toggleLoading(runButton, false);
+              setStatus('Failed to run sync: ' + getErrorMessage(error), 'error');
+            })
+            .runNow();
+        });
+
+        resetButton.addEventListener('click', function() {
+          if (!window.confirm('Reset all saved setup data?')) {
+            return;
+          }
+          setStatus('Resetting setup…', 'info');
+          toggleLoading(resetButton, true);
+          google.script.run
+            .withSuccessHandler(function(settings) {
+              toggleLoading(resetButton, false);
+              setStatus('Setup reset. You can enter new configuration values.', 'success');
+              applySettings(settings);
+            })
+            .withFailureHandler(function(error) {
+              toggleLoading(resetButton, false);
+              setStatus('Failed to reset setup: ' + getErrorMessage(error), 'error');
+            })
+            .resetSetup();
+        });
+
+        applySettings(state);
+      })();
+    </script>
+  </body>
+</html>
