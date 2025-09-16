@@ -249,17 +249,54 @@ function uploadShortcutsToGitHub(owner, repo, folder, ids, token) {
     const ghPath = normalizedFolder ? `${normalizedFolder}/${id}.txt` : `${id}.txt`;
     const ghUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${ghPath}`;
 
+    const baseHeaders = {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/vnd.github.v3+json"
+    };
+
+    const existingResp = UrlFetchApp.fetch(
+      ghUrl,
+      {
+        method: "get",
+        headers: baseHeaders,
+        muteHttpExceptions: true
+      }
+    );
+
+    const existingStatus = existingResp.getResponseCode();
+    let existingFile = null;
+    if (existingStatus === 200) {
+      try {
+        existingFile = JSON.parse(existingResp.getContentText());
+      } catch (error) {
+        throw new Error(`Failed to parse existing GitHub file for shortcut ${id}.`);
+      }
+    } else if (existingStatus !== 404) {
+      throw new Error(
+        `Failed to check existing shortcut ${id} on GitHub (HTTP ${existingStatus}).`
+      );
+    }
+
+    if (existingFile) {
+      const existingEncoded = existingFile.content ? existingFile.content.replace(/\s/g, "") : "";
+      if (existingEncoded === encoded) {
+        Logger.log(`Skipped ${id}: no changes.`);
+        return;
+      }
+    }
+
     const payload = {
-      message: `Add shortcut ${id}`,
+      message: existingFile ? `Update shortcut ${id}` : `Add shortcut ${id}`,
       content: encoded
     };
 
+    if (existingFile && existingFile.sha) {
+      payload.sha = existingFile.sha;
+    }
+
     const options = {
       method: "put",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/vnd.github.v3+json"
-      },
+      headers: baseHeaders,
       payload: JSON.stringify(payload),
       muteHttpExceptions: true
     };
@@ -269,7 +306,7 @@ function uploadShortcutsToGitHub(owner, repo, folder, ids, token) {
     if (status >= 400) {
       throw new Error(`Failed to upload shortcut ${id} to GitHub (HTTP ${status}).`);
     }
-    Logger.log(`Uploaded ${id}: ${status}`);
+    Logger.log(`${existingFile ? "Updated" : "Uploaded"} ${id}: ${status}`);
   });
 }
 
