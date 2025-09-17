@@ -1,3 +1,8 @@
+// name: RoutineHub Update Cache
+// author: SmokeSlate
+// version: 1.0
+// url: https://github.com/SmokeSlate/updateCache/
+
 const SCRIPT_PROP_KEYS = {
   owner: "GITHUB_OWNER",
   repo: "GITHUB_REPO",
