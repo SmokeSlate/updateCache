@@ -6,7 +6,7 @@ Cache shortcut updates from RoutineHub API and push them to a GitHub repository.
 ## Setup
 
 1. Open the [Apps Script project](https://script.google.com/home/projects/1FbQLKqGQWl2Re3TFxMNr0Q4-CtVuzmTK6uppKJuvdnbGyxZ03dBUjmLo) click make a copy then in your copy and choose **Run > New deployments > Web App** to launch the setup page.
-!(Deploy)[https://github.com/SmokeSlate/updateCache/blob/main/make_webapp.png?raw=true]
+!(Deploy)[https://github.com/b2d557d4-dbe2-45bd-a6c0-58478f1a27ff]
 3. Use the setup page to provide:
    - GitHub owner or organization name
    - Repository name
