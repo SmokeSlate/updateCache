@@ -1,7 +1,7 @@
 # RoutineHub updateCache
 
 Cache shortcut updates from RoutineHub API and push them to a GitHub repository.
-![main image]()
+![main image](https://github.com/SmokeSlate/updateCache/blob/05646c93f48df24d56e74444c14f648ca24a0883/mainHero.png)
 
 ## Setup
 
