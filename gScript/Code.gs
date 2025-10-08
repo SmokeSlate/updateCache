@@ -3,6 +3,8 @@
 // version: 1.0
 // url: https://github.com/SmokeSlate/updateCache/
 
+
+
 const SCRIPT_PROP_KEYS = {
   owner: "GITHUB_OWNER",
   repo: "GITHUB_REPO",
@@ -202,7 +204,7 @@ function fetchRoutineHubShortcutIds(routineHubToken) {
   }
 
   const response = UrlFetchApp.fetch(
-    "https://rhapi.sm0ke.org/api/v1/cd3b83e8b088e26cc69b5ca8d5b1c9d9406672cb/shortcuts",
+    "https://rhapi.sm0ke.org/api/v1/"+routineHubToken+"/shortcuts",
     options
   );
   const code = response.getResponseCode();
@@ -434,4 +436,8 @@ function doGet() {
 
 function include(filename) {
   return HtmlService.createHtmlOutputFromFile(filename).getContent();
+}
+
+function test() {
+  uploadShortcutsFromSettings();
 }
