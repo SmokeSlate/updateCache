@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.png" alt="Description" width="300">
+</p>
+
 # RoutineHub updateCache
 
 Cache shortcut updates from RoutineHub API and push them to a GitHub repository.
