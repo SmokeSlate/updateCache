@@ -1,7 +1,7 @@
 <p align="center">
   <img src="assets/logo.png" alt="Description" width="300">
 </p>
-* * * 
+***
 
 Cache shortcut updates from RoutineHub API and push them to a GitHub repository.
 ![main image](https://github.com/SmokeSlate/updateCache/blob/05646c93f48df24d56e74444c14f648ca24a0883/mainHero.png)
