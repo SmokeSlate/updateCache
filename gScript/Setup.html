@@ -475,7 +475,7 @@
     </main>
 
     <script>
-      const INITIAL_SETTINGS = <?!= JSON.stringify(initialSettings) ?>;
+      const INITIAL_SETTINGS = <?!= serializeSettingsForScript(initialSettings) ?>;
     </script>
     <script>
       (function() {
@@ -781,3 +781,4 @@
     </script>
   </body>
 </html>
+
