@@ -74,7 +74,7 @@ function saveSettings(form) {
       [SCRIPT_PROP_KEYS.folder]: settings.folder,
       [SCRIPT_PROP_KEYS.manualEnabled]: settings.manualShortcutsEnabled ? "true" : "false"
     },
-    true
+    false
   );
 
   settings.manualShortcuts = setManualShortcuts(settings.manualShortcuts);
@@ -248,13 +248,20 @@ function uploadShortcutsToGitHub(owner, repo, folder, ids, token) {
     .replace(/[\s/]+$/, "");
 
   ids.forEach(function(id) {
+    if (!/^\d+$/.test(String(id))) {
+      throw new Error("Shortcut IDs must contain only digits.");
+    }
+  });
+
+  ids.forEach(function(id) {
     const url = `https://rhapi.sm0ke.org/api/v1/shortcuts/${id}/versions/latest`;
     const resp = UrlFetchApp.fetch(url);
     const content = resp.getContentText();
     const encoded = Utilities.base64Encode(content);
 
     const ghPath = normalizedFolder ? `${normalizedFolder}/${id}.txt` : `${id}.txt`;
-    const ghUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${ghPath}`;
+    const encodedPath = ghPath.split("/").map(encodeURIComponent).join("/");
+    const ghUrl = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/${encodedPath}`;
 
     const baseHeaders = {
       Authorization: `Bearer ${token}`,
@@ -428,6 +435,14 @@ function resetSetup() {
   return getSettings();
 }
 
+// JSON is embedded in an HTML script element, not just a JavaScript string.
+function serializeSettingsForScript(settings) {
+  return JSON.stringify(settings)
+    .replace(/</g, "\\u003c")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
+}
+
 function doGet() {
   const template = HtmlService.createTemplateFromFile("Setup");
   template.initialSettings = getSettings();
@@ -441,3 +456,4 @@ function include(filename) {
 function test() {
   uploadShortcutsFromSettings();
 }
+

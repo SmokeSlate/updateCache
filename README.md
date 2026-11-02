@@ -29,3 +29,11 @@ Cache shortcut updates from RoutineHub API and push them to a GitHub repository.
 * Use **Reset setup** on the setup page to clear all stored configuration, run history and the hourly trigger.
 
 Once saved, you can also run `uploadShortcutsFromSettings` directly from the script editor to fetch the latest shortcuts and upload them to your configured repository.
+
+
+## Offline regression tests
+
+Run `node tests/regressions.js` with Node 18 or newer. Apps Script properties,
+triggers and fetches are mocked: tests cover preserving run history on save,
+explicit reset, encoded GitHub paths, numeric shortcut IDs, and HTML-safe
+settings serialization. No Google, GitHub or RoutineHub service is contacted.
